@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 10px;
+            color: green;
+        }
+        #messages {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <button id="connectButton">Connect to WebSocket</button>
+    <p id="status">Status: Not Connected</p>
+    <div id="messages">
+        <h3>Messages:</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let socket;
+
+        const connectButton = document.getElementById('connectButton');
+        const statusDisplay = document.getElementById('status');
+        const logDisplay = document.getElementById('log');
+
+        connectButton.addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                logMessage('Already connected.');
+                return;
+            }
+
+            // Connect to the WebSocket server
+            socket = new WebSocket('ws://localhost:8000');
+
+            // Event: Connection opened
+            socket.addEventListener('open', () => {
+                statusDisplay.textContent = 'Status: Connected';
+                logMessage('WebSocket connection established.');
+            });
+
+            // Event: Message received
+            socket.addEventListener('message', (event) => {
+                logMessage(`Received: ${event.data}`);
+            });
+
+            // Event: Connection closed
+            socket.addEventListener('close', () => {
+                statusDisplay.textContent = 'Status: Disconnected';
+                logMessage('WebSocket connection closed.');
+            });
+
+            // Event: Error occurred
+            socket.addEventListener('error', (error) => {
+                statusDisplay.textContent = 'Status: Error';
+                logMessage('WebSocket error occurred.');
+                console.error(error);
+            });
+        });
+
+        function logMessage(message) {
+            const logEntry = document.createElement('p');
+            logEntry.textContent = message;
+            logDisplay.appendChild(logEntry);
+        }
+    </script>
+</body>
+</html>

@@ -52,8 +52,9 @@ int main(int argc, char* argv[]) {
     } else if (helpPrinted) {
         return 0;
     }
-    sfu::Server server(port);
+    sfu::Server server;
     sfu::CLI cli(server, argv[0]);
+    server.run(port);
     return cli.run();
 }
 
